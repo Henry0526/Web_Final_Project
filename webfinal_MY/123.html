@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta charset = "utf-8">
+	<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>	
+	
+	<script src="http://maps.google.com/maps?file=api&v=2&key=AIzaSyA47C5fJih24FXHGGW72XP4vIo52cFGy0Q" type="text/javascript"></script>
+   <script>
+   var Areaj;
+	var Kindj;
+	var Rangej;
+	var but;
+	var out;
+	var m;
+	function start()
+	{
+	    $.ajax({
+		url: "list_data.php",
+		data: {
+		   Area : Areaj.value,
+		   Kind : Kindj.value,
+		   Range : Rangej.value
+	        },
+		type: "POST",
+		datatype: "html",
+	        success: function( output ) {
+		   	out.innerHTML = output;
+	        },
+		error : function(){
+		    alert( "Request failed." );
+		}
+	    });
+	}
+	
+	function init()
+	{
+	Areaj = document.getElementById("Area");
+	Kindj = document.getElementById("Kind");
+	Rangej = document.getElementById("Range");
+	but = document.getElementById("submit");
+	out = document.getElementById("out");
+	but.onclick = start;
+	m = document.getElementById("map");
+	}
+	
+	
+
+	function show_map(a, adrname)
+	{
+		for(var i=0; i<a[adrname].length; i++)
+		{
+			if(a[adrname][i].checked)
+			{
+				var address = a[adrname][i].value;
+				
+				if (GBrowserIsCompatible())
+				{
+					var map = new GMap2(m);
+					var geocoder = new GClientGeocoder();
+        
+					map.addControl(new GSmallMapControl());
+		
+					geocoder.getLatLng(address, function(point)//轉換地址變成經緯度
+					{
+						if (!point) 
+						{
+							alert('Google Maps 找不到該地址，無法顯示地圖！'); //如果Google Maps無法顯示該地址的警示文字
+						}
+						else
+						{
+							map.setCenter(point, 13);
+							var marker = new GMarker(point);
+							map.addOverlay(marker);
+						}
+					});
+				}
+			}
+		
+		}
+		
+    }
+	
+	window.onload = init;
+   </script>
+   <style type = "text/css">
+		body  { font-family: sans-serif;
+                 background-color: lightyellow; }
+         table { background-color: lightblue;
+                 border-collapse: collapse;
+                 border: 1px solid gray; }
+         td    { padding: 5px; }
+		 td:nth-child(1) {background-color: #5f9ea0;}
+         tr:nth-child(odd) { background-color: white; }
+	     #information_a{margin: 0px auto;
+		     width: 70%;
+             height: 100px;
+             border: 3px solid orange;
+             padding-left:5px;
+		     line-height:100px;
+             background: -webkit-radial-gradient(center, yellow, orange);
+             background: -moz-radial-gradient(center, yellow, orange);
+             background: radial-gradient(center, yellow, orange);}
+		 #information_b{ margin: 0px auto;
+		     width: 70%;
+             height: 60%;
+             border: 3px solid white;
+             padding-left:5px;
+		     line-height:100px;
+             background: -webkit-radial-gradient(center, lightblue, white);
+             background: -moz-radial-gradient(center, yellow, orange);
+             background: radial-gradient(center, yellow, orange);}
+		 img{float:left;}
+	</style>
+</head>
+<body >
+<div id = "information_a">桃園市房價</div></div>
+<br>
+<div id="information_b"><form>
+		Area&nbsp;:&nbsp;<select id="Area" required>
+		<option value="桃園區">桃園區</option>
+		<option value="龜山區">龜山區</option>
+		<option value="平鎮區">平鎮區</option>
+		<option value="觀音區">觀音區</option>
+		<option value="八德區">八德區</option>
+		<option value="中壢區">中壢區</option>
+		<option value="龍潭區">龍潭區</option>
+		<option value="蘆竹區">蘆竹區</option>
+	</select>
+	Kind of house&nbsp;:&nbsp;<select id="Kind" required>
+		<option value="買賣">買賣</option>
+		<option value="預售屋">預售屋</option>
+		<option value="租賃">租賃</option>
+	</select>
+	$Range&nbsp;:&nbsp;<select id="Range" required>
+		<option value="10000">5萬以下</option>
+		<option value="100000">5萬~10萬</option>
+		<option value="1000000">10萬~100萬</option>
+	</select>
+</form>
+<input type="button" id="submit" value = "查詢">
+<div id="map" style="width: 500px; height: 300px"></div>
+<div id = "out"></div></div>
+</body>
+</html>
